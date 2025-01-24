@@ -33,10 +33,9 @@ public protocol Endpoint {
 }
 
 extension Endpoint {
-    func urlRequest() async throws -> URLRequest {
-        try await SSLChecker.shared.checkURL(url: baseURL)
-        
+    func urlRequest() throws -> URLRequest {        
         guard var urlComponents = URLComponents(string: baseURL + path) else {
+            Logger.shared.log(message: "Geçersiz url")
             throw NetworkError.invalidURL
         }
         
@@ -45,10 +44,13 @@ extension Endpoint {
         }
         
         guard let url = urlComponents.url else {
+            Logger.shared.log(message: "Geçersiz url")
             throw NetworkError.invalidURL
         }
         
         var request = URLRequest(url: url)
+        
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
         request.httpBody = body
