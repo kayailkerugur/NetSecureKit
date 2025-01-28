@@ -24,8 +24,11 @@ public final class NetworkManager: @unchecked Sendable {
             
             logger.log(message: "\(request.url?.absoluteString ?? "") linkine ağ isteği gönderildi")
             
-            let task = SSLChecker(logger: logger).createSession().dataTask(with: request) { [weak self] data, response, error in
-                guard let self = self else { return }
+            let task = SSLChecker(logger: logger).createSession().dataTask(with: request) { data, response, error in
+//                guard let self = self else {
+//                    self?.logger.log(message: "Hata meydana geldi: \(String(describing: error?.localizedDescription))")
+//                    return
+//                }
                 if let error = error {
                     self.logger.log(message: "Hata meydana geldi: \(error.localizedDescription)")
                     completion(.failure(.custom(error)))
