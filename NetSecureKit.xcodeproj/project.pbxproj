@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		8604C4D22D3F99B3002FCF10 /* NetSecureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8604C4C72D3F99B2002FCF10 /* NetSecureKit.framework */; };
 		86C5CF4E2D43B042000EB761 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 86C5CF4D2D43B042000EB761 /* OpenSSL */; };
-		86C5CF502D43B221000EB761 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 86C5CF4F2D43B221000EB761 /* OpenSSL */; };
-		86D9335C2D41058D005EC8B8 /* NetSecureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8604C4C72D3F99B2002FCF10 /* NetSecureKit.framework */; };
-		86D9335D2D41058D005EC8B8 /* NetSecureKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8604C4C72D3F99B2002FCF10 /* NetSecureKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,33 +19,11 @@
 			remoteGlobalIDString = 8604C4C62D3F99B2002FCF10;
 			remoteInfo = NetSecureKit;
 		};
-		86D9335E2D41058D005EC8B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8604C4BE2D3F99B2002FCF10 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8604C4C62D3F99B2002FCF10;
-			remoteInfo = NetSecureKit;
-		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		86D933602D41058D005EC8B8 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				86D9335D2D41058D005EC8B8 /* NetSecureKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8604C4C72D3F99B2002FCF10 /* NetSecureKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NetSecureKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8604C4D12D3F99B3002FCF10 /* NetSecureKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NetSecureKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		86D9334D2D410571005EC8B8 /* NetSecureKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetSecureKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -75,11 +50,6 @@
 			path = NetSecureKitTests;
 			sourceTree = "<group>";
 		};
-		86D9334E2D410571005EC8B8 /* NetSecureKitDemo */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = NetSecureKitDemo;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,15 +69,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		86D9334A2D410571005EC8B8 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86D9335C2D41058D005EC8B8 /* NetSecureKit.framework in Frameworks */,
-				86C5CF502D43B221000EB761 /* OpenSSL in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -116,7 +77,6 @@
 			children = (
 				8604C4C92D3F99B2002FCF10 /* NetSecureKit */,
 				8604C4D52D3F99B3002FCF10 /* NetSecureKitTests */,
-				86D9334E2D410571005EC8B8 /* NetSecureKitDemo */,
 				86D9335B2D41058D005EC8B8 /* Frameworks */,
 				8604C4C82D3F99B2002FCF10 /* Products */,
 			);
@@ -127,7 +87,6 @@
 			children = (
 				8604C4C72D3F99B2002FCF10 /* NetSecureKit.framework */,
 				8604C4D12D3F99B3002FCF10 /* NetSecureKitTests.xctest */,
-				86D9334D2D410571005EC8B8 /* NetSecureKitDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -199,31 +158,6 @@
 			productReference = 8604C4D12D3F99B3002FCF10 /* NetSecureKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		86D9334C2D410571005EC8B8 /* NetSecureKitDemo */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 86D9335A2D410573005EC8B8 /* Build configuration list for PBXNativeTarget "NetSecureKitDemo" */;
-			buildPhases = (
-				86D933492D410571005EC8B8 /* Sources */,
-				86D9334A2D410571005EC8B8 /* Frameworks */,
-				86D9334B2D410571005EC8B8 /* Resources */,
-				86D933602D41058D005EC8B8 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				86D9335F2D41058D005EC8B8 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				86D9334E2D410571005EC8B8 /* NetSecureKitDemo */,
-			);
-			name = NetSecureKitDemo;
-			packageProductDependencies = (
-				86C5CF4F2D43B221000EB761 /* OpenSSL */,
-			);
-			productName = NetSecureKitDemo;
-			productReference = 86D9334D2D410571005EC8B8 /* NetSecureKitDemo.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -238,9 +172,6 @@
 						CreatedOnToolsVersion = 16.0;
 					};
 					8604C4D02D3F99B3002FCF10 = {
-						CreatedOnToolsVersion = 16.0;
-					};
-					86D9334C2D410571005EC8B8 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -264,7 +195,6 @@
 			targets = (
 				8604C4C62D3F99B2002FCF10 /* NetSecureKit */,
 				8604C4D02D3F99B3002FCF10 /* NetSecureKitTests */,
-				86D9334C2D410571005EC8B8 /* NetSecureKitDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -278,13 +208,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8604C4CF2D3F99B3002FCF10 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		86D9334B2D410571005EC8B8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -308,13 +231,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		86D933492D410571005EC8B8 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -322,11 +238,6 @@
 			isa = PBXTargetDependency;
 			target = 8604C4C62D3F99B2002FCF10 /* NetSecureKit */;
 			targetProxy = 8604C4D32D3F99B3002FCF10 /* PBXContainerItemProxy */;
-		};
-		86D9335F2D41058D005EC8B8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8604C4C62D3F99B2002FCF10 /* NetSecureKit */;
-			targetProxy = 86D9335E2D41058D005EC8B8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -556,68 +467,6 @@
 			};
 			name = Release;
 		};
-		86D933582D410573005EC8B8 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NetSecureKitDemo/Preview Content\"";
-				DEVELOPMENT_TEAM = DW4R8GHFA2;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kayailker.NetSecureKitDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		86D933592D410573005EC8B8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NetSecureKitDemo/Preview Content\"";
-				DEVELOPMENT_TEAM = DW4R8GHFA2;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kayailker.NetSecureKitDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -648,15 +497,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		86D9335A2D410573005EC8B8 /* Build configuration list for PBXNativeTarget "NetSecureKitDemo" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				86D933582D410573005EC8B8 /* Debug */,
-				86D933592D410573005EC8B8 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -672,11 +512,6 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		86C5CF4D2D43B042000EB761 /* OpenSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 86C5CF4C2D43AF52000EB761 /* XCRemoteSwiftPackageReference "OpenSSL" */;
-			productName = OpenSSL;
-		};
-		86C5CF4F2D43B221000EB761 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 86C5CF4C2D43AF52000EB761 /* XCRemoteSwiftPackageReference "OpenSSL" */;
 			productName = OpenSSL;
