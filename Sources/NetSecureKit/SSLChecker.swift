@@ -9,9 +9,14 @@ import Foundation
 import CommonCrypto
 import Security
 
-public class SSLChecker: NSObject, @preconcurrency URLSessionDelegate, @unchecked Sendable {
-    public static let shared = SSLChecker()
-    private override init() { }
+import Foundation
+
+public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable {
+    private var logger: Logger
+
+    public init(logger: Logger) {
+        self.logger = logger
+    }
     
     public func createSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
@@ -19,9 +24,9 @@ public class SSLChecker: NSObject, @preconcurrency URLSessionDelegate, @unchecke
         return session
     }
     
-    @MainActor public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         guard let serverTrust = challenge.protectionSpace.serverTrust else {
-            Logger.shared.log(message: "SSL Sertifika doğrulaması yapılamadı.")
+            logger.log(message: "SSL Sertifika doğrulaması yapılamadı.")
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
         }
@@ -31,7 +36,7 @@ public class SSLChecker: NSObject, @preconcurrency URLSessionDelegate, @unchecke
         }
         
         guard let serverCertificate = serverCertificates.first else {
-            Logger.shared.log(message: "SSL Sertifika bulunamadı")
+            logger.log(message: "SSL Sertifika bulunamadı")
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
         }
@@ -43,47 +48,13 @@ public class SSLChecker: NSObject, @preconcurrency URLSessionDelegate, @unchecke
             print("Issued On: \(validityDates.issuedOn)")
             print("Expires On: \(validityDates.expiresOn)")
         } else {
-            Logger.shared.log(message: "Sertifika geçerlilik tarihleri alınamadı.")
+            logger.log(message: "Sertifika geçerlilik tarihleri alınamadı.")
             completionHandler(.cancelAuthenticationChallenge, nil)
+            return
         }
         
         print("Sertifika SHA-256 Hash: \(serverCertificateHash)")
         
         completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
-    
-    // MARK: For manuel check process
-//    public func checkURL(url: String, completion: @escaping (Result<Void, NetworkError>) -> Void) {
-//        let session = createSession()
-//        guard let url = URL(string: url) else {
-//            Logger.shared.log(message: "Geçersiz URL")
-//            completion(.failure(.unknownError))
-//            return
-//        }
-//        
-//        let task = session.dataTask(with: URLRequest(url: url)) { data, response, error in
-//            if let error = error {
-//                Logger.shared.log(message: "SSL Sertifikası bulunamadı. Hata: \(error.localizedDescription)")
-//                completion(.failure(.sslError))
-//                return
-//            }
-//            
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                Logger.shared.log(message: "SSL kısmında bilinmeyen hata meydana geldi")
-//                completion(.failure(.unknownError))
-//                return
-//            }
-//            
-//            if httpResponse.statusCode == 200 {
-//                print("Başarılı! SSL -> HTTP Durum Kodu: \(httpResponse.statusCode)")
-//                completion(.success(()))
-//            } else {
-//                Logger.shared.log(message: "SSL Sertifikası bulunamadı. HTTP Durum Kodu: \(httpResponse.statusCode)")
-//                completion(.failure(.sslError))
-//            }
-//        }
-//        
-//        task.resume()
-//    }
-
 }
