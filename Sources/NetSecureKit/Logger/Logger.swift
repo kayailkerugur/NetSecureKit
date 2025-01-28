@@ -7,16 +7,17 @@
 
 import Foundation
 
-public final class Logger {
-    public struct LogEntry {
+public final class Logger: @unchecked Sendable {
+    public struct LogEntry : Sendable{
         public let timestamp: String
         public let functionName: String
         public let message: String
     }
     
-    @MainActor public static let shared = Logger()
+    public static let shared = Logger()
     
     private var logs: [LogEntry] = []
+    private let queue = DispatchQueue(label: "com.kayailker.logger", attributes: .concurrent)
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -26,17 +27,29 @@ public final class Logger {
     
     private init() {}
     
+    /// Log mesajını ekler.
     public func log(functionName: String = #function, message: String) {
         let timestamp = dateFormatter.string(from: Date())
         let logEntry = LogEntry(timestamp: timestamp, functionName: functionName, message: message)
-        logs.append(logEntry)
+        
+        queue.async(flags: .barrier) { [weak self] in
+            self?.logs.append(logEntry)
+        }
     }
     
+    /// Tüm logları döner.
     public func getLogs() -> [LogEntry] {
-        return logs
+        var currentLogs: [LogEntry] = []
+        queue.sync {
+            currentLogs = logs
+        }
+        return currentLogs
     }
     
+    /// Tüm logları temizler.
     public func clearLogs() {
-        logs.removeAll()
+        queue.async(flags: .barrier) { [weak self] in
+            self?.logs.removeAll()
+        }
     }
 }
