@@ -7,14 +7,14 @@
 
 import Foundation
 
-public class Logger {
+public final class Logger {
     public struct LogEntry {
         public let timestamp: String
         public let functionName: String
         public let message: String
     }
     
-    public static let shared = Logger()
+    @MainActor public static let shared = Logger()
     
     private var logs: [LogEntry] = []
     

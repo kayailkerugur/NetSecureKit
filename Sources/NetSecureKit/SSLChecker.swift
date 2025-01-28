@@ -9,7 +9,7 @@ import Foundation
 import CommonCrypto
 import Security
 
-public class SSLChecker: NSObject, URLSessionDelegate {
+public class SSLChecker: NSObject, @preconcurrency URLSessionDelegate, @unchecked Sendable {
     public static let shared = SSLChecker()
     private override init() { }
     
@@ -19,7 +19,7 @@ public class SSLChecker: NSObject, URLSessionDelegate {
         return session
     }
     
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    @MainActor public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         guard let serverTrust = challenge.protectionSpace.serverTrust else {
             Logger.shared.log(message: "SSL Sertifika doğrulaması yapılamadı.")
             completionHandler(.cancelAuthenticationChallenge, nil)
@@ -53,27 +53,37 @@ public class SSLChecker: NSObject, URLSessionDelegate {
     }
     
     // MARK: For manuel check process
-    public func checkURL(url: String) async throws {
-        let session = createSession()
-        let url = URL(string: url)!
-        
-        do {
-            let (_, response) = try await session.data(for: URLRequest(url: url))
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("Başarılı! SSL -> HTTP Durum Kodu: \(httpResponse.statusCode)")
-                
-                if httpResponse.statusCode != 200 {
-                    Logger.shared.log(message: "SSL Sertifikası bulunamadı")
-                    throw NetworkError.sslError
-                }
-            } else {
-                Logger.shared.log(message: "SSL kısmında bilinmeyen hata meydana geldi")
-                throw NetworkError.unknownError
-            }
-        } catch {
-            Logger.shared.log(message: "SSL Sertifikası bulunamadı")
-            throw NetworkError.sslError
-        }
-    }
+//    public func checkURL(url: String, completion: @escaping (Result<Void, NetworkError>) -> Void) {
+//        let session = createSession()
+//        guard let url = URL(string: url) else {
+//            Logger.shared.log(message: "Geçersiz URL")
+//            completion(.failure(.unknownError))
+//            return
+//        }
+//        
+//        let task = session.dataTask(with: URLRequest(url: url)) { data, response, error in
+//            if let error = error {
+//                Logger.shared.log(message: "SSL Sertifikası bulunamadı. Hata: \(error.localizedDescription)")
+//                completion(.failure(.sslError))
+//                return
+//            }
+//            
+//            guard let httpResponse = response as? HTTPURLResponse else {
+//                Logger.shared.log(message: "SSL kısmında bilinmeyen hata meydana geldi")
+//                completion(.failure(.unknownError))
+//                return
+//            }
+//            
+//            if httpResponse.statusCode == 200 {
+//                print("Başarılı! SSL -> HTTP Durum Kodu: \(httpResponse.statusCode)")
+//                completion(.success(()))
+//            } else {
+//                Logger.shared.log(message: "SSL Sertifikası bulunamadı. HTTP Durum Kodu: \(httpResponse.statusCode)")
+//                completion(.failure(.sslError))
+//            }
+//        }
+//        
+//        task.resume()
+//    }
+
 }

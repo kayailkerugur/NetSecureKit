@@ -33,7 +33,7 @@ public protocol Endpoint {
 } // SPM
 
 extension Endpoint {
-    func urlRequest() throws -> URLRequest {        
+    @MainActor func urlRequest() throws -> URLRequest {        
         guard var urlComponents = URLComponents(string: baseURL + path) else {
             Logger.shared.log(message: "Geçersiz url")
             throw NetworkError.invalidURL
