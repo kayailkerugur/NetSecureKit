@@ -8,7 +8,6 @@
 import Foundation
 import Security
 import CommonCrypto
-import CryptoKit
 import OpenSSL
 
 public struct SSLHelper {
@@ -50,7 +49,7 @@ public struct SSLHelper {
         return validityDates
     }
 
-    static func ASN1_TIME_to_date(_ time: UnsafePointer<ASN1_TIME>?) -> Date? {
+    static private func ASN1_TIME_to_date(_ time: UnsafePointer<ASN1_TIME>?) -> Date? {
         guard let time = time else { return nil }
 
         var calendar = Calendar(identifier: .gregorian)
@@ -71,7 +70,7 @@ public struct SSLHelper {
         return nil
     }
 
-    static func ASN1_TIME_to_tm(_ time: UnsafePointer<ASN1_TIME>, _ year: inout Int32, _ month: inout Int32, _ day: inout Int32, _ hour: inout Int32, _ minute: inout Int32, _ second: inout Int32) -> Int32 {
+    static private func ASN1_TIME_to_tm(_ time: UnsafePointer<ASN1_TIME>, _ year: inout Int32, _ month: inout Int32, _ day: inout Int32, _ hour: inout Int32, _ minute: inout Int32, _ second: inout Int32) -> Int32 {
         var tm = tm()
         let result = OpenSSL.ASN1_TIME_to_tm(time, &tm)
         if result != 0 {

@@ -44,6 +44,7 @@ public class SSLChecker: NSObject, URLSessionDelegate {
             print("Expires On: \(validityDates.expiresOn)")
         } else {
             Logger.shared.log(message: "Sertifika geçerlilik tarihleri alınamadı.")
+            completionHandler(.cancelAuthenticationChallenge, nil)
         }
         
         print("Sertifika SHA-256 Hash: \(serverCertificateHash)")

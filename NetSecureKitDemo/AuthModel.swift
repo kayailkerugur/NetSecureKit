@@ -7,5 +7,3 @@
 
 import Foundation
 
-// model was here
-

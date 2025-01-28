@@ -13,7 +13,6 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Button {
-                    
                     do {
                         let data = try JSONEncoder().encode(AuthModel())
                         var endpoint = ExampleEndpoint()
@@ -38,13 +37,25 @@ struct ContentView: View {
 //                        }
 //                    }
                 } label: {
-                    Text("Tıkla")
+                    Text("Test Et")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                        .padding(.horizontal)
                 }
                 
                 NavigationLink {
                     LogListView()
                 } label: {
-                    Text("Logları görüntüle")
+                    Text("Logları Görüntüle")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                        .padding(.horizontal)
                 }
 
             }

@@ -30,7 +30,7 @@ public protocol Endpoint {
     var headers: [String: String]? { get }
     var queryParameters: [String: String]? { get }
     var body: Data? { get }
-}
+} // SPM
 
 extension Endpoint {
     func urlRequest() throws -> URLRequest {        
