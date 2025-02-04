@@ -8,53 +8,61 @@
 import Foundation
 
 public final class NetworkManager: @unchecked Sendable {
-    private let logger: Logger
+    private var sslPinnig: Bool = false
     
-    public init(logger: Logger) {
-        self.logger = logger
+    private var certificateName: String = ""
+    
+    public init(certificateName: String = "") {
+        self.sslPinnig = true
+        self.certificateName = certificateName
     }
     
-    public func request<T: Decodable>(
+    public func setSSLPinning(status: Bool) {
+        self.sslPinnig = status
+    }
+    
+    public func request<T: Decodable, U: Decodable>(
         endpoint: Endpoint,
         responseType: T.Type,
-        completion: @escaping @Sendable (Result<T, NetworkError>) -> Void
+        completion: @escaping @Sendable (Result<U, NetworkError>) -> Void
     ) {
         do {
-            let request = try endpoint.urlRequest(logger: logger)
+            let request = try endpoint.urlRequest()
             
-            logger.log(message: "\(request.url?.absoluteString ?? "") linkine ağ isteği gönderildi")
+            CapsulateLogger.addLog(functionName: #function, message: "\(request.url?.absoluteString ?? "") linkine ağ isteği gönderildi")
+
             
-            let task = SSLChecker(logger: logger).createSession().dataTask(with: request) { data, response, error in
-//                guard let self = self else {
-//                    self?.logger.log(message: "Hata meydana geldi: \(String(describing: error?.localizedDescription))")
-//                    return
-//                }
+            let task = SSLChecker(sslPinningEnabled: sslPinnig, serverCertificateName: certificateName).createSession().dataTask(with: request) { data, response, error in
+                
                 if let error = error {
-                    self.logger.log(message: "Hata meydana geldi: \(error.localizedDescription)")
+                    CapsulateLogger.addLog(functionName: #function, message: "Hata meydana geldi: \(error.localizedDescription)")
                     completion(.failure(.custom(error)))
                     return
                 }
                 
                 guard let data = data else {
-                    self.logger.log(message: "Data bulunamadı")
+                    CapsulateLogger.addLog(functionName: #function, message: "Data bulunamadı")
+
                     completion(.failure(.noData))
                     return
                 }
                 
                 do {
-                    self.logger.log(message: "Gelen veri: \(String(data: data, encoding: .utf8) ?? "Veri okunamadı")")
-                    let decodedResponse = try JSONDecoder().decode(T.self, from: data)
-                    self.logger.log(message: "Veri alındı ve başarıyla çözümlendi")
+                    CapsulateLogger.addLog(functionName: #function, message: "Gelen veri: \(String(data: data, encoding: .utf8) ?? "Veri okunamadı")")
+                    let decodedResponse = try JSONDecoder().decode(U.self, from: data)
+                    CapsulateLogger.addLog(functionName: #function, message: "Veri alındı ve başarıyla çözümlendi")
+
                     completion(.success(decodedResponse))
                 } catch {
-                    self.logger.log(message: "Decoding sırasında hata: \(error.localizedDescription)")
+                    CapsulateLogger.addLog(functionName: #function, message: "Decoding sırasında hata: \(error.localizedDescription)")
+
                     completion(.failure(.decodingError))
                 }
             }
             
             task.resume()
         } catch {
-            logger.log(message: "İstek oluşturulurken hata: \(error.localizedDescription)")
+            CapsulateLogger.addLog(functionName: #function, message: "İstek oluşturulurken hata: \(error.localizedDescription)")
             completion(.failure(.custom(error)))
         }
     }

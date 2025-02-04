@@ -9,13 +9,15 @@ import Foundation
 import CommonCrypto
 import Security
 
-import Foundation
-
 public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable {
-    private var logger: Logger
+    
+    private var sslPinningEnabled: Bool = false
+    
+    private var certificateName: String = ""
 
-    public init(logger: Logger) {
-        self.logger = logger
+    public init(sslPinningEnabled: Bool = false, serverCertificateName: String) {
+        self.sslPinningEnabled = sslPinningEnabled
+        self.certificateName = serverCertificateName
     }
     
     public func createSession() -> URLSession {
@@ -25,36 +27,75 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
     }
     
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        guard let serverTrust = challenge.protectionSpace.serverTrust else {
-            logger.log(message: "SSL Sertifika doğrulaması yapılamadı.")
+        if sslPinningEnabled {
+            guard let serverTrust = challenge.protectionSpace.serverTrust else {
+                CapsulateLogger.addLog(functionName: #function, message: "SSL Sertifika doğrulaması yapılamadı.")
+
+                completionHandler(.cancelAuthenticationChallenge, nil)
+                return
+            }
+            
+            let serverCertificates = (0..<SecTrustGetCertificateCount(serverTrust)).compactMap { index in
+                SecTrustGetCertificateAtIndex(serverTrust, index)
+            }
+            
+            for serverCertificate in serverCertificates {
+                
+                guard let bundleCertificate = SSLHelper.fetchBundleSertificate(certificateName: certificateName) else  {
+                    CapsulateLogger.addLog(functionName: #function, message: "Bundle'da SSL Sertifika bulunamadı")
+                    completionHandler(.cancelAuthenticationChallenge, nil)
+                    return
+                }
+                            
+                let serverCertificateData = SecCertificateCopyData(serverCertificate) as Data
+                let serverCertificateHash = SSLHelper.sha256(data: serverCertificateData)
+                
+                let bundleCertificateData = SecCertificateCopyData(bundleCertificate) as Data
+                let bundleCertificateHash = SSLHelper.sha256(data: bundleCertificateData)
+                
+                if let validityDates = SSLHelper.getCertificateValidity(from: serverCertificateData) {
+                    print("Issued On: \(validityDates.issuedOn)")
+                    print("Expires On: \(validityDates.expiresOn)")
+                    if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
+                        CapsulateLogger.addLog(functionName: #function, message: "Sertifika süresi geçmiş")
+                        completionHandler(.cancelAuthenticationChallenge, nil)
+                        return
+                    }
+                } else {
+                    CapsulateLogger.addLog(functionName: #function, message: "Sertifika geçerlilik tarihleri alınamadı.")
+                    completionHandler(.cancelAuthenticationChallenge, nil)
+                    return
+                }
+                
+                if let validityDates = SSLHelper.getCertificateValidity(from: bundleCertificateData) {
+                    print("Bundle Issued On: \(validityDates.issuedOn)")
+                    print("Bundle Expires On: \(validityDates.expiresOn)")
+                    if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
+                        CapsulateLogger.addLog(functionName: #function, message: "Bundle Sertifika süresi geçmiş")
+                        completionHandler(.cancelAuthenticationChallenge, nil)
+                        return
+                    }
+                } else {
+                    CapsulateLogger.addLog(functionName: #function, message: "Bundle Sertifika geçerlilik tarihleri alınamadı.")
+                    completionHandler(.cancelAuthenticationChallenge, nil)
+                    return
+                }
+                
+                print("Sertifika SHA-256 Hash: \(serverCertificateHash)")
+                print("Bundle Sertifika SHA-256 Hash: \(bundleCertificateHash)")
+                
+                if serverCertificateHash == bundleCertificateHash {
+                    completionHandler(.useCredential, URLCredential(trust: serverTrust))
+                    return
+                } else  {
+                    CapsulateLogger.addLog(functionName: #function, message: "Bundle sertifikası ile server sertifikası uyuşmadı.")
+                }
+            }
+            
             completionHandler(.cancelAuthenticationChallenge, nil)
-            return
-        }
-        
-        let serverCertificates = (0..<SecTrustGetCertificateCount(serverTrust)).compactMap { index in
-            SecTrustGetCertificateAtIndex(serverTrust, index)
-        }
-        
-        guard let serverCertificate = serverCertificates.first else {
-            logger.log(message: "SSL Sertifika bulunamadı")
-            completionHandler(.cancelAuthenticationChallenge, nil)
-            return
-        }
-        
-        let serverCertificateData = SecCertificateCopyData(serverCertificate) as Data
-        let serverCertificateHash = SSLHelper.sha256(data: serverCertificateData)
-        
-        if let validityDates = SSLHelper.getCertificateValidity(from: serverCertificateData) {
-            print("Issued On: \(validityDates.issuedOn)")
-            print("Expires On: \(validityDates.expiresOn)")
+            CapsulateLogger.addLog(functionName: #function, message: "Sertifika geçerli değil")
         } else {
-            logger.log(message: "Sertifika geçerlilik tarihleri alınamadı.")
-            completionHandler(.cancelAuthenticationChallenge, nil)
-            return
+            completionHandler(.useCredential, nil)
         }
-        
-        print("Sertifika SHA-256 Hash: \(serverCertificateHash)")
-        
-        completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
 }

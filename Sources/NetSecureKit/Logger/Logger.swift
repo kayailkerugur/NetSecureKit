@@ -8,13 +8,16 @@
 import Foundation
 
 public final class Logger {
-    public struct LogEntry {
-        public let timestamp: String
-        public let functionName: String
-        public let message: String
-    }
+    public let timestamp: String?
+    public let functionName: String?
+    public let message: String?
     
-    private var logs: [LogEntry] = []
+    
+    public init(functionName: String? = nil, message: String? = nil) {
+        self.timestamp = dateFormatter.string(from: Date())
+        self.functionName = functionName
+        self.message = message
+    }
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -22,20 +25,23 @@ public final class Logger {
         return formatter
     }()
     
-    public init() {}
+}
+
+
+public class CapsulateLogger: @unchecked Sendable {
     
-    public func log(functionName: String = #function, message: String) {
-        let timestamp = dateFormatter.string(from: Date())
-        let logEntry = LogEntry(timestamp: timestamp, functionName: functionName, message: message)
-        
-        self.logs.append(logEntry)
+    nonisolated(unsafe) public static var logs: [Logger] = []
+    
+    
+    public static func addLog(functionName: String, message: String) {
+        logs.append(Logger(functionName: functionName, message: message))
     }
     
-    public func getLogs() -> [LogEntry] {
+    public static func getLogs() -> [Logger] {
         return logs
     }
     
-    public func clearLogs() {
-        self.logs.removeAll()
+    public static func clearLogs() {
+        logs.removeAll()
     }
 }

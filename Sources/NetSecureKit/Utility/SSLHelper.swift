@@ -95,5 +95,27 @@ public struct SSLHelper {
         }
         return Data(hash).map { String(format: "%02hhx", $0) }.joined()
     }
+    
+    
+    static func fetchBundleSertificate(certificateName: String) -> SecCertificate? {
+        if let certificateURL = Bundle.main.url(forResource: certificateName, withExtension: "der") {
+            do {
+                let certificateData = try Data(contentsOf: certificateURL)
+                
+                if let certificate = SecCertificateCreateWithData(nil, certificateData as CFData) {
+                    return certificate
+                } else {
+                    CapsulateLogger.addLog(functionName: #function, message: "Sertifika oluşturulamadı.")
+                    return nil
+                }
+            } catch {
+                CapsulateLogger.addLog(functionName: #function, message: "Sertifika dosyası okunurken hata oluştu: \(error)")
+                return nil
+            }
+        } else {
+            CapsulateLogger.addLog(functionName: #function, message: "Sertifika dosyası bulunamadı.")
+            return nil
+        }
+    }
 }
 
