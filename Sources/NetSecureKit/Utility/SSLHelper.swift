@@ -12,11 +12,6 @@ import OpenSSL
 
 public struct SSLHelper {
     static func getCertificateValidity(from certData: Data) -> (issuedOn: Date, expiresOn: Date)? {
-//        guard let certificate = SecTrustGetCertificateAtIndex(trust, 0),
-//              let certData = getCertificateData(from: certificate) else {
-//            print("Sertifika alınamadı.")
-//            return nil
-//        }
         
         var validityDates: (issuedOn: Date, expiresOn: Date)?
 

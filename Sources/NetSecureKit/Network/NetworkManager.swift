@@ -21,10 +21,10 @@ public final class NetworkManager: @unchecked Sendable {
         self.sslPinnig = status
     }
     
-    public func request<T: Decodable, U: Decodable>(
+    public func request<T: Decodable>(
         endpoint: Endpoint,
         responseType: T.Type,
-        completion: @escaping @Sendable (Result<U, NetworkError>) -> Void
+        completion: @escaping @Sendable (Result<T, NetworkError>) -> Void
     ) {
         do {
             let request = try endpoint.urlRequest()
@@ -49,7 +49,7 @@ public final class NetworkManager: @unchecked Sendable {
                 
                 do {
                     CapsulateLogger.addLog(functionName: #function, message: "Gelen veri: \(String(data: data, encoding: .utf8) ?? "Veri okunamadı")")
-                    let decodedResponse = try JSONDecoder().decode(U.self, from: data)
+                    let decodedResponse = try JSONDecoder().decode(T.self, from: data)
                     CapsulateLogger.addLog(functionName: #function, message: "Veri alındı ve başarıyla çözümlendi")
 
                     completion(.success(decodedResponse))
