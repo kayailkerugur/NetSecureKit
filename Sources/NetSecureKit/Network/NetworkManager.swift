@@ -55,8 +55,8 @@ public final class NetworkManager: @unchecked Sendable {
                     completion(.success(decodedResponse))
                 } catch {
                     CapsulateLogger.addLog(functionName: #function, message: "Decoding sırasında hata: \(error.localizedDescription)")
-
-                    completion(.failure(.decodingError(data: data)))
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                    completion(.failure(.decodingError(data: data, statusCode: statusCode)))
                 }
             }
             
