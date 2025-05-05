@@ -17,7 +17,7 @@ public enum HTTPMethod: String {
 public enum NetworkError: Error {
     case invalidURL
     case noData
-    case decodingError
+    case decodingError(data: Data)
     case custom(Error)
     case sslError
     case unknownError

@@ -56,7 +56,7 @@ public final class NetworkManager: @unchecked Sendable {
                 } catch {
                     CapsulateLogger.addLog(functionName: #function, message: "Decoding sırasında hata: \(error.localizedDescription)")
 
-                    completion(.failure(.decodingError))
+                    completion(.failure(.decodingError(data: data)))
                 }
             }
             
