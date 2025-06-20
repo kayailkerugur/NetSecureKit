@@ -25,15 +25,18 @@ public final class Logger {
     }()
 }
 
-public class CapsulateLogger: @unchecked Sendable {
-    
-    nonisolated(unsafe) public static var logs: [Logger] = []
-    
-    public static func addLog(functionName: String, message: String) {
+actor CapsulateLogger {
+    static var logs: [Logger] = []
+
+    static func addLog(functionName: String, message: String) {
         logs.append(Logger(functionName: functionName, message: message))
     }
-    
-    public static func clearLogs() {
+
+    static func clearLogs() {
         logs.removeAll()
+    }
+
+    static func getLogs() -> [Logger] {
+        return logs
     }
 }
