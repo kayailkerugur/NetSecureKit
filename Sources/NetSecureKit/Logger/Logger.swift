@@ -25,7 +25,7 @@ public final class Logger {
     }()
 }
 
-actor CapsulateLogger {
+public actor CapsulateLogger {
     static var logs: [Logger] = []
 
     static func addLog(functionName: String, message: String) {
