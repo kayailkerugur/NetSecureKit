@@ -28,15 +28,15 @@ public final class Logger {
 public actor CapsulateLogger {
     static var logs: [Logger] = []
 
-    static func addLog(functionName: String, message: String) {
+    public static func addLog(functionName: String, message: String) {
         logs.append(Logger(functionName: functionName, message: message))
     }
 
-    static func clearLogs() {
+    public static func clearLogs() {
         logs.removeAll()
     }
 
-    static func getLogs() -> [Logger] {
+    public static func getLogs() -> [Logger] {
         return logs
     }
 }
