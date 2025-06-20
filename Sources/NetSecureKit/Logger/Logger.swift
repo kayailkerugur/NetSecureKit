@@ -26,7 +26,7 @@ public final class Logger {
 }
 
 public actor CapsulateLogger {
-    static var logs: [Logger] = []
+    public static var logs: [Logger] = []
 
     public static func addLog(functionName: String, message: String) {
         logs.append(Logger(functionName: functionName, message: message))
