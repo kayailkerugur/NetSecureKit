@@ -42,7 +42,7 @@ public struct EndpointModel: Endpoint {
     public var queryParameters: [String: String]?
     public var body: Data?
     
-    public init(baseURL: String, path: String, method: HTTPMethod, headers: [String : String]? = nil, queryParameters: [String : String]? = nil, model: Codable? = nil) async {
+    public init(baseURL: String, path: String, method: HTTPMethod, headers: [String : String]? = nil, queryParameters: [String : String]? = nil, model: Codable? = nil) {
         self.baseURL = baseURL
         self.path = path
         self.method = method
