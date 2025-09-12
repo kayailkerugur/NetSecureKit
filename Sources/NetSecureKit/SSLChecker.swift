@@ -29,7 +29,6 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if sslPinningEnabled {
             guard let serverTrust = challenge.protectionSpace.serverTrust else {
-                CapsulateLogger.addLog(functionName: #function, message: "SSL Sertifika doğrulaması yapılamadı.")
 
                 completionHandler(.cancelAuthenticationChallenge, nil)
                 return
@@ -42,7 +41,6 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
             for serverCertificate in serverCertificates {
                 
                 guard let bundleCertificate = SSLHelper.fetchBundleSertificate(certificateName: certificateName) else  {
-                    CapsulateLogger.addLog(functionName: #function, message: "Bundle'da SSL Sertifika bulunamadı")
                     completionHandler(.cancelAuthenticationChallenge, nil)
                     return
                 }
@@ -57,12 +55,10 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
                     print("Issued On: \(validityDates.issuedOn)")
                     print("Expires On: \(validityDates.expiresOn)")
                     if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
-                        CapsulateLogger.addLog(functionName: #function, message: "Sertifika süresi geçmiş")
                         completionHandler(.cancelAuthenticationChallenge, nil)
                         return
                     }
                 } else {
-                    CapsulateLogger.addLog(functionName: #function, message: "Sertifika geçerlilik tarihleri alınamadı.")
                     completionHandler(.cancelAuthenticationChallenge, nil)
                     return
                 }
@@ -71,12 +67,10 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
                     print("Bundle Issued On: \(validityDates.issuedOn)")
                     print("Bundle Expires On: \(validityDates.expiresOn)")
                     if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
-                        CapsulateLogger.addLog(functionName: #function, message: "Bundle Sertifika süresi geçmiş")
                         completionHandler(.cancelAuthenticationChallenge, nil)
                         return
                     }
                 } else {
-                    CapsulateLogger.addLog(functionName: #function, message: "Bundle Sertifika geçerlilik tarihleri alınamadı.")
                     completionHandler(.cancelAuthenticationChallenge, nil)
                     return
                 }
@@ -88,12 +82,10 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
                     completionHandler(.useCredential, URLCredential(trust: serverTrust))
                     return
                 } else  {
-                    CapsulateLogger.addLog(functionName: #function, message: "Bundle sertifikası ile server sertifikası uyuşmadı.")
                 }
             }
             
             completionHandler(.cancelAuthenticationChallenge, nil)
-            CapsulateLogger.addLog(functionName: #function, message: "Sertifika geçerli değil")
         } else {
             completionHandler(.useCredential, nil)
         }

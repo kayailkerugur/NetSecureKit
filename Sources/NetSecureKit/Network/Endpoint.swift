@@ -34,6 +34,7 @@ public protocol Endpoint {
 }
 
 public struct EndpointModel: Endpoint {
+    
     public var baseURL: String
     public var path: String
     public var method: HTTPMethod
@@ -41,7 +42,7 @@ public struct EndpointModel: Endpoint {
     public var queryParameters: [String: String]?
     public var body: Data?
     
-    public init(baseURL: String, path: String, method: HTTPMethod, headers: [String : String]? = nil, queryParameters: [String : String]? = nil, model: Codable? = nil) {
+    public init(baseURL: String, path: String, method: HTTPMethod, headers: [String : String]? = nil, queryParameters: [String : String]? = nil, model: Codable? = nil) async {
         self.baseURL = baseURL
         self.path = path
         self.method = method
@@ -57,7 +58,7 @@ public struct EndpointModel: Endpoint {
             let modelData = try JSONEncoder().encode(model)
             self.body = modelData
         } catch {
-            CapsulateLogger.addLog(functionName: #function, message: "Model dataya dönüşümü sırasında hata oluştu, hata: \(error.localizedDescription)")
+            
         }
     }
 }
@@ -65,7 +66,6 @@ public struct EndpointModel: Endpoint {
 extension Endpoint {
     func urlRequest() throws -> URLRequest {
         guard var urlComponents = URLComponents(string: baseURL + path) else {
-            CapsulateLogger.addLog(functionName: #function, message: "Geçersiz URL")
 
             throw NetworkError.invalidURL
         }
@@ -75,7 +75,6 @@ extension Endpoint {
         }
         
         guard let url = urlComponents.url else {
-            CapsulateLogger.addLog(functionName: #function, message: "Geçersiz URL")
             throw NetworkError.invalidURL
         }
         

@@ -26,17 +26,21 @@ public final class Logger {
 }
 
 public actor CapsulateLogger {
-    public static var logs: [Logger] = []
+    static let shared = CapsulateLogger()
+    
+    private var logs: [Logger] = []
 
-    public static func addLog(functionName: String, message: String) {
+    private init() {}
+
+    public func addLog(functionName: String, message: String) {
         logs.append(Logger(functionName: functionName, message: message))
     }
 
-    public static func clearLogs() {
+    public func clearLogs() {
         logs.removeAll()
     }
 
-    public static func getLogs() -> [Logger] {
+    public func getLogs() -> [Logger] {
         return logs
     }
 }

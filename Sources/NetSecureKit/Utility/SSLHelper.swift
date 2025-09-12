@@ -100,15 +100,12 @@ public struct SSLHelper {
                 if let certificate = SecCertificateCreateWithData(nil, certificateData as CFData) {
                     return certificate
                 } else {
-                    CapsulateLogger.addLog(functionName: #function, message: "Sertifika oluşturulamadı.")
                     return nil
                 }
             } catch {
-                CapsulateLogger.addLog(functionName: #function, message: "Sertifika dosyası okunurken hata oluştu: \(error)")
                 return nil
             }
         } else {
-            CapsulateLogger.addLog(functionName: #function, message: "Sertifika dosyası bulunamadı.")
             return nil
         }
     }
