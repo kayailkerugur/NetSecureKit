@@ -14,13 +14,14 @@ public enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-public enum NetworkError: Error {
+public enum NetworkError: Error, Sendable {
     case invalidURL
     case noData
     case decodingError(data: Data, statusCode: Int)
     case custom(Error)
     case sslError
     case unknownError
+    case invalidResponse
 }
 
 public protocol Endpoint {

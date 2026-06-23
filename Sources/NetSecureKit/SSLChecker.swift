@@ -11,9 +11,8 @@ import Security
 
 public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable {
     
-    private var sslPinningEnabled: Bool = false
-    
-    private var certificateName: String = ""
+    private let sslPinningEnabled: Bool
+    private let certificateName: String
 
     public init(sslPinningEnabled: Bool = false, serverCertificateName: String) {
         self.sslPinningEnabled = sslPinningEnabled
@@ -22,72 +21,46 @@ public final class SSLChecker: NSObject, URLSessionDelegate, @unchecked Sendable
     
     public func createSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
-        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-        return session
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }
     
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if sslPinningEnabled {
-            guard let serverTrust = challenge.protectionSpace.serverTrust else {
+    public func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        guard sslPinningEnabled else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
 
-                completionHandler(.cancelAuthenticationChallenge, nil)
+        guard let serverTrust = challenge.protectionSpace.serverTrust else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        guard let bundleCertificate = SSLHelper.fetchBundleSertificate(certificateName: certificateName) else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        let bundleCertificateData = SecCertificateCopyData(bundleCertificate) as Data
+        let bundleCertificateHash = SSLHelper.sha256(data: bundleCertificateData)
+
+        let serverCertificates = (0..<SecTrustGetCertificateCount(serverTrust)).compactMap {
+            SecTrustGetCertificateAtIndex(serverTrust, $0)
+        }
+
+        for serverCertificate in serverCertificates {
+            let serverCertificateData = SecCertificateCopyData(serverCertificate) as Data
+            let serverCertificateHash = SSLHelper.sha256(data: serverCertificateData)
+
+            if serverCertificateHash == bundleCertificateHash {
+                completionHandler(.useCredential, URLCredential(trust: serverTrust))
                 return
             }
-            
-            let serverCertificates = (0..<SecTrustGetCertificateCount(serverTrust)).compactMap { index in
-                SecTrustGetCertificateAtIndex(serverTrust, index)
-            }
-            
-            for serverCertificate in serverCertificates {
-                
-                guard let bundleCertificate = SSLHelper.fetchBundleSertificate(certificateName: certificateName) else  {
-                    completionHandler(.cancelAuthenticationChallenge, nil)
-                    return
-                }
-                            
-                let serverCertificateData = SecCertificateCopyData(serverCertificate) as Data
-                let serverCertificateHash = SSLHelper.sha256(data: serverCertificateData)
-                
-                let bundleCertificateData = SecCertificateCopyData(bundleCertificate) as Data
-                let bundleCertificateHash = SSLHelper.sha256(data: bundleCertificateData)
-                
-                if let validityDates = SSLHelper.getCertificateValidity(from: serverCertificateData) {
-                    print("Issued On: \(validityDates.issuedOn)")
-                    print("Expires On: \(validityDates.expiresOn)")
-                    if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
-                        completionHandler(.cancelAuthenticationChallenge, nil)
-                        return
-                    }
-                } else {
-                    completionHandler(.cancelAuthenticationChallenge, nil)
-                    return
-                }
-                
-                if let validityDates = SSLHelper.getCertificateValidity(from: bundleCertificateData) {
-                    print("Bundle Issued On: \(validityDates.issuedOn)")
-                    print("Bundle Expires On: \(validityDates.expiresOn)")
-                    if !DateFormatterHelper.isValidSSLCertificateDate(issuedDate: validityDates.issuedOn, expiresDate: validityDates.expiresOn) {
-                        completionHandler(.cancelAuthenticationChallenge, nil)
-                        return
-                    }
-                } else {
-                    completionHandler(.cancelAuthenticationChallenge, nil)
-                    return
-                }
-                
-                print("Sertifika SHA-256 Hash: \(serverCertificateHash)")
-                print("Bundle Sertifika SHA-256 Hash: \(bundleCertificateHash)")
-                
-                if serverCertificateHash == bundleCertificateHash {
-                    completionHandler(.useCredential, URLCredential(trust: serverTrust))
-                    return
-                } else  {
-                }
-            }
-            
-            completionHandler(.cancelAuthenticationChallenge, nil)
-        } else {
-            completionHandler(.useCredential, nil)
         }
+
+        completionHandler(.cancelAuthenticationChallenge, nil)
     }
 }
