@@ -1,267 +1,258 @@
-NetSecureKit
+# NetSecureKit
 
-A lightweight, secure, and modern networking library for iOS built with Swift.
+A lightweight, secure, and modern networking library for iOS, built with Swift.
 
-NetSecureKit simplifies network communication while providing features such as SSL Pinning, Async/Await support, response validation, raw data handling, and built-in logging.
+NetSecureKit simplifies network communication without sacrificing security or clarity. It provides SSL Pinning, Async/Await support, response validation, raw data handling, and a built-in thread-safe logging system.
 
-Features
+---
 
-* SSL Pinning Support
-* Async/Await Networking
-* Completion Handler Networking
-* HTTP Status Code Validation
-* Raw Data Requests
-* Empty Response Handling
-* Thread-Safe Logging System
-* Codable Request/Response Support
-* Lightweight Architecture
-* Swift Package Manager Support
+## Features
 
-Installation
+- SSL Pinning Support
+- Async/Await & Completion Handler APIs
+- HTTP Status Code Validation
+- Raw Data & Empty Response Handling
+- Thread-Safe Logging System
+- Codable Request/Response Support
+- Lightweight Architecture
+- Swift Package Manager Support
 
-Swift Package Manager
+---
 
-Add the package dependency to your project:
+## Installation
 
+### Swift Package Manager
+
+Add the dependency to your `Package.swift`:
+
+```swift
 dependencies: [
     .package(
         url: "https://github.com/kayailkerugur/NetSecureKit.git",
         from: "1.2.0"
     )
 ]
+```
 
-Or add it directly from Xcode:
+Or add it directly in Xcode:
 
-1. File
-2. Add Package Dependencies
-3. Paste:
-
+1. **File → Add Package Dependencies**
+2. Paste the URL:
+```
 https://github.com/kayailkerugur/NetSecureKit.git
+```
 
-Quick Start
+---
 
-Create an Endpoint
+## Quick Start
 
+### Create an Endpoint
+
+```swift
 import NetSecureKit
+
 let endpoint = EndpointModel(
     baseURL: "https://jsonplaceholder.typicode.com",
     path: "/posts/1",
     method: .get
 )
+```
 
-Define Response Model
+### Define a Response Model
 
+```swift
 struct PostResponse: Codable {
     let userId: Int
     let id: Int
     let title: String
     let body: String
 }
+```
 
-Standard Request
+---
 
+## Making Requests
+
+### Completion Handler
+
+```swift
 let manager = NetworkManager()
-manager.request(
-    endpoint: endpoint,
-    responseType: PostResponse.self
-) { result in
-    
+manager.request(endpoint: endpoint, responseType: PostResponse.self) { result in
     switch result {
-    case .success(let response):
-        print(response)
-        
-    case .failure(let error):
-        print(error)
+    case .success(let response): print(response)
+    case .failure(let error): print(error)
     }
 }
+```
 
-Async/Await Support
+### Async/Await
 
-let manager = NetworkManager()
-let result = await manager.requestAsync(
-    endpoint: endpoint,
-    responseType: PostResponse.self
-)
+```swift
+let result = await manager.requestAsync(endpoint: endpoint, responseType: PostResponse.self)
 switch result {
-case .success(let response):
-    print(response)
-case .failure(let error):
-    print(error)
+case .success(let response): print(response)
+case .failure(let error): print(error)
 }
+```
 
-HTTP Status Code Validation
+### HTTP Status Code Validation
 
-manager.requestWithStatusCode(
-    endpoint: endpoint,
-    responseType: PostResponse.self
-) { result in
-    
+```swift
+manager.requestWithStatusCode(endpoint: endpoint, responseType: PostResponse.self) { result in
     switch result {
-    case .success(let response):
-        print(response)
-    case .failure(let error):
-        print(error)
+    case .success(let response): print(response)
+    case .failure(let error): print(error)
     }
 }
+```
 
-Raw Data Request
+### Raw Data
 
-manager.requestData(
-    endpoint: endpoint
-) { result in
-    
+```swift
+manager.requestData(endpoint: endpoint) { result in
     switch result {
-    case .success(let data):
-        print(data)
-    case .failure(let error):
-        print(error)
+    case .success(let data): print(data)
+    case .failure(let error): print(error)
     }
 }
+```
 
-Empty Response Request
+### Empty Response
 
-Useful for:
+Useful for DELETE operations, logout requests, or endpoints returning HTTP 204.
 
-* DELETE operations
-* Logout requests
-* Endpoints returning HTTP 204
-
-manager.requestEmpty(
-    endpoint: endpoint
-) { result in
-    
+```swift
+manager.requestEmpty(endpoint: endpoint) { result in
     switch result {
-    case .success:
-        print("Success")
-    case .failure(let error):
-        print(error)
+    case .success: print("Success")
+    case .failure(let error): print(error)
     }
 }
+```
 
-SSL Pinning
+---
 
-Initialize NetworkManager with your certificate name:
+## SSL Pinning
 
-let manager = NetworkManager(
-    certificateName: "my_certificate"
-)
+```swift
+// Initialize with your certificate
+let manager = NetworkManager(certificateName: "my_certificate")
 
-Enable SSL Pinning:
+// Enable
+manager.setSSLPinning(status: true)
 
-manager.setSSLPinning(
-    status: true
-)
+// Disable
+manager.setSSLPinning(status: false)
+```
 
-Disable SSL Pinning:
+---
 
-manager.setSSLPinning(
-    status: false
-)
+## Logging
 
-Logger
+```swift
+// Add a log entry
+await NetSecureLogger.shared.addLog(message: "Request started")
 
-Add Logs
-
-await NetSecureLogger.shared.addLog(
-    message: "Request started"
-)
-
-Get Logs
-
+// Retrieve logs
 let logs = await NetSecureLogger.shared.getLogs()
 
-Export Logs
+// Export logs
+let exported = await NetSecureLogger.shared.exportLogs()
 
-let exportedLogs = await NetSecureLogger.shared.exportLogs()
-
-Clear Logs
-
+// Clear logs
 await NetSecureLogger.shared.clearLogs()
+```
 
-Endpoint Configuration
+---
 
-GET Request
+## Endpoint Configuration
 
+### GET Request
+
+```swift
 let endpoint = EndpointModel(
     baseURL: "https://api.example.com",
     path: "/users",
     method: .get
 )
+```
 
-POST Request
+### POST Request
 
+```swift
 struct LoginRequest: Codable {
     let email: String
     let password: String
 }
+
 let endpoint = EndpointModel(
     baseURL: "https://api.example.com",
     path: "/login",
     method: .post,
-    model: LoginRequest(
-        email: "user@example.com",
-        password: "password"
-    )
+    model: LoginRequest(email: "user@example.com", password: "password")
 )
+```
 
-Query Parameters
+### Query Parameters
 
+```swift
 let endpoint = EndpointModel(
     baseURL: "https://api.example.com",
     path: "/users",
     method: .get,
-    queryParameters: [
-        "page": "1",
-        "size": "10"
-    ]
+    queryParameters: ["page": "1", "size": "10"]
 )
+```
 
-Custom Headers
+### Custom Headers
 
+```swift
 let endpoint = EndpointModel(
     baseURL: "https://api.example.com",
     path: "/profile",
     method: .get,
-    headers: [
-        "Authorization": "Bearer token"
-    ]
+    headers: ["Authorization": "Bearer token"]
 )
+```
 
-Requirements
+---
 
-* iOS 15.0+
-* Swift 5.9+
-* Xcode 15+
+## Requirements
 
-Roadmap
+| Requirement | Version |
+|---|---|
+| iOS | 15.0+ |
+| Swift | 5.9+ |
+| Xcode | 15+ |
 
-v1.3.0
+---
 
-* WebSocket Support
-* Auto Reconnect
-* AsyncStream Message Handling
-* Ping/Pong Support
+## Roadmap
 
-v1.4.0
+**v1.3.0**
+- WebSocket Support
+- Auto Reconnect
+- AsyncStream Message Handling
+- Ping/Pong Support
 
-* Multipart Upload
-* File Download
-* Progress Tracking
+**v1.4.0**
+- Multipart Upload
+- File Download
+- Progress Tracking
 
-v2.0.0
+**v2.0.0**
+- Interceptors & Retry Policies
+- Token Refresh Support
+- Middleware System
 
-* Interceptors
-* Retry Policies
-* Token Refresh Support
-* Middleware System
+---
 
-Author
+## Author
 
-İlker Uğur Kaya
+**İlker Uğur Kaya** · [github.com/kayailkerugur](https://github.com/kayailkerugur/NetSecureKit)
 
-GitHub:
-https://github.com/kayailkerugur/NetSecureKit
+---
 
-License
+## License
 
 MIT License
